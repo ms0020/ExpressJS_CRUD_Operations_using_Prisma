@@ -1,7 +1,15 @@
 import prisma from "../DB/db.config.js";
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { jwtTokens } from '../utils/jwt-helpers.js';
+// import { authenticateToken } from '../middleware/authorization.js';
+
+
+
 
 export const createUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const findUser = await prisma.user.findUnique({
         where: {
@@ -17,24 +25,27 @@ export const createUser = async (req, res) => {
         data: {
             name: name,
             email: email,
-            password: password
+            password: hashedPassword
         }
     });
     return res.json({ status: 200, data: newUser, msg: "User created." })
 };
 
+
+
 // Fetch all users
 export const fetchUsers = async (req, res) => {
     const users = await prisma.user.findMany({
-       
-         include: {
-             post: {
-                 select: {
-                     title: true,
-                     comment_count: true,
-                 },
-             },
-         },
+
+        include: {
+            post: {
+                select: {
+                    title: true,
+                    comment_count: true,
+                    like_count: true
+                },
+            },
+        },
     });
 
     // select: {
