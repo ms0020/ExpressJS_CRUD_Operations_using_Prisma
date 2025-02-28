@@ -7,12 +7,10 @@ import LikeRoutes from './likeRoutes.js';
 import LikeCommentRoutes from './likecommentRoutes.js';
 
 
-
 const router = Router();
 
 // User Routes
 router.use("/api/user", UserRoutes);
-
 
 // For Post Routes
 router.use("/api/post", PostRoutes);
@@ -28,8 +26,6 @@ router.use("/api/likecomment", LikeCommentRoutes)
 
 // Auth Routes
 router.use("/api/auth", AuthRoutes)
-
-
 
 
 export default router;
