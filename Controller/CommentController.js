@@ -41,15 +41,16 @@ export const fetchComments = async (req, res) => {
     return res.json({ status: 200, data: comments, "Here we get": "All Comments." })
 };
 
-// Fetch Comment by ID
+// Fetch Comment by Comment
 export const fetchBycomment = async (req, res) => {
-    const commentId = req.body;
-    const comment = await prisma.comment.findFirst({
-        // where: {
-        //     id: Number(commentId)
-        // },
+    const commentId = req.body.user_comment;
+    const findComment = await prisma.comment.findFirst({
+        where: {
+            comment: commentId
+        },
     });
-    return res.json({ status: 200, data: comment, "Here we get": "The Comment." })
+    console.log(commentId);
+    return res.json({ status: 200, data: findComment, "Here we get": "The Comment." })
 
 };
 
@@ -61,26 +62,27 @@ export const updateComment = async (req, res) => {
 
     await prisma.comment.update({
         where: {
-            id: Number(commentId)
+            id: commentId
         },
         data: {
             user_id,
             post_id,
-            comment,
+            comment
         }
     });
 
     return res.json({ status: 200, message: "Comment updated successfully." })
 };
 
-// Delete Post
+// Delete Comment
 export const deleteComment = async (req, res) => {
     const commentId = req.params.id;
+    const post_id = req.body.post_id
 
     // Increase the comment counter
     await prisma.post.update({
         where: {
-            id: Number(commentId)
+            id: Number(post_id)
         },
         data: {
             comment_count: {
@@ -89,9 +91,9 @@ export const deleteComment = async (req, res) => {
         },
     });
 
-    await prisma.comment.deleteMany({
+    await prisma.comment.delete({
         where: {
-            id: Number(commentId)
+            id: String(commentId)
         }
     });
     return res.json({ status: 200, message: "Comment deleted successfully." })

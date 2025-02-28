@@ -66,17 +66,20 @@ export const fetchPosts = async (req, res) => {
         //         gt: 0    // gt -> Greater than & gte -> Greater than equal to
         //     }
         // }
+        
     });
-// To get the Total Post count
-const totalPosts = await prisma.post.count()
-const totalpages = Math.ceil(totalPosts / limit)
+    // To get the Total Post count
+    const totalPosts = await prisma.post.count()
+    const totalpages = Math.ceil(totalPosts / limit)
 
-
-    return res.json({ status: 200, data: posts, meta: {
-        totalpages,
-        currentPage: page,
-        limit: limit,
-    },"Here we get": "All Posts." })
+    console.log(posts[0]['comment'][0]['created_at']);
+    return res.json({
+        status: 200, data: posts, meta: {
+            totalpages,
+            currentPage: page,
+            limit: limit,
+        }, "Here we get": "All Posts."
+    })
 };
 
 // Fetch Post by ID
@@ -135,4 +138,35 @@ export const searchPost = async (req, res) => {
     })
 
     return res.json({ status: 200, data: posts })
-}
+};
+
+// Fetch Post of a particular user by Name
+export const fetchPostByName = async (req, res) => {
+    const userName = req.body.userName;
+    //const userComment = await prisma.comment.findFirst({})
+    const userPosts = await prisma.user.findMany({
+        where: {
+            name: userName
+        },
+        include: {
+            post: {
+                include: {
+                    comment: {
+                        select:{
+                            comment: true
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+    //console.log(userPosts[0]['post'][0]['description']);
+     console.log(userPosts[0]['post'][0]['comment'][0]['comment'])
+    return res.json({ status: 200, data: userPosts, message: "All user Post." })
+};
+
+
+
+
+

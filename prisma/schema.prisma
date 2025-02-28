@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -16,7 +16,7 @@ datasource db {
 
 model User {
   id Int @id @default(autoincrement())
-  
+
   name String?
 
   email String @unique
@@ -27,26 +27,52 @@ model User {
 
   comment Comment[]
 
-  created_at DateTime @default(now())
+  created_at  DateTime      @default(now())
+  Like        Like[]
+  LikeComment LikeComment[]
 }
 
 model Post {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  comment Comment[]
-  user_id Int
-  title String
-  description String
-  comment_count Int @default(0)
-  created_at DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  comment       Comment[]
+  user_id       Int
+  title         String
+  description   String
+  like_count    Int       @default(0)
+  comment_count Int       @default(0)
+  created_at    DateTime  @default(now())
+  Like          Like[]
+  
 }
 
 model Comment {
-  id String @id @default(uuid())
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  post_id Int
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id Int
-  comment String
+  id                String        @id @default(uuid())
+  post              Post          @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id           Int
+  user              User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id           Int
+  comment           String
+  likeComment_count Int           @default(0)
+  created_at        DateTime      @default(now())
+  LikeComment       LikeComment[]
+}
+
+model Like {
+  id         String   @id @default(uuid())
+  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id    Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    Int
+  like       Int
+  created_at DateTime @default(now())
+}
+
+model LikeComment {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    Int
+  comment    Comment  @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  comment_id String
   created_at DateTime @default(now())
 }
